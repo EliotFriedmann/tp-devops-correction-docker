@@ -1,0 +1,67 @@
+name: Test Backend
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - develop
+  pull_request:
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-24.04
+
+    steps:
+      # Checkout your GitHub code
+      - uses: actions/checkout@v4
+
+      # Set up JDK 21
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5.2.0
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # Build and test the backend application
+      - name: Build and test with Maven
+        run: mvn clean verify --file ./simple-api/pom.xml
+
+  build:
+    name: Build and analyze
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout with full history for SonarCloud analysis
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Set up JDK 21
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5.2.0
+        with:
+          java-version: '21'
+          distribution: zulu
+
+      # Cache SonarCloud packages
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      # Cache Maven packages
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      # Build and analyze with SonarCloud
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar --file ./simple-api/pom.xml -Dsonar.projectKey=EliotFriedmann_tp-devops-correction-docker
