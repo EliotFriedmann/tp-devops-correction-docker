@@ -21,8 +21,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '21'
-          cache: maven
+          #cache: maven
 
       # Build and test the backend application
       - name: Build and test with Maven
-        run: mvn clean verify --file simple-api/pom.xml 
+        run: mvn clean verify --file ./simple-api/pom.xml 
