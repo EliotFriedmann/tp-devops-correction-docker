@@ -79,3 +79,4 @@ jobs:
           ansible-playbook \
             -i tp3/ansible/inventories/setup.yml \
             tp3/ansible/playbook.yml
+  
