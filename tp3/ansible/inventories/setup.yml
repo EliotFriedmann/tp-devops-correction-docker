@@ -1,7 +1,7 @@
 all:
   vars:
     ansible_user: admin
-    ansible_ssh_private_key_file: /home/eliot/Téléchargements/id_rsa
+    ansible_ssh_private_key_file: /tp-devops-correction-docker/tp3/ansible/keys/id_rsa
 
   children:
     prod:
