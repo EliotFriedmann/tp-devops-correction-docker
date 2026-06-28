@@ -1,82 +1,89 @@
-name: Build, Push and Deploy Docker Images
+  name: Build, Push and Deploy Docker Images
 
-on:
-  workflow_run:
-    workflows:
-      - Test Backend
-    types:
-      - completed
-    branches:
-      - main
-      - master
+  on:
+    workflow_run:
+      workflows:
+        - Test Backend
+      types:
+        - completed
+      branches:
+        - main
+        - master
 
-jobs:
-  build-and-push-docker-image:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-24.04
+  jobs:
+    build-and-push-docker-image:
+      if: ${{ github.event.workflow_run.conclusion == 'success' }}
+      runs-on: ubuntu-24.04
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
 
-      - name: Login to DockerHub
-        run: |
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" |
-          docker login \
-            --username "${{ vars.DOCKERHUB_USERNAME }}" \
-            --password-stdin
+        - name: Login to DockerHub
+          run: |
+            echo "${{ secrets.DOCKERHUB_TOKEN }}" |
+            docker login \
+              --username "${{ vars.DOCKERHUB_USERNAME }}" \
+              --password-stdin
 
-      - name: Build and push backend
-        uses: docker/build-push-action@v6
-        with:
-          context: ./simple-api
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
-          push: true
+        - name: Build and push backend
+          uses: docker/build-push-action@v6
+          with:
+            context: ./simple-api
+            tags: ${{ vars.DOCKERHUB_USERNAME }}/tp-devops-simple-api:latest
+            push: true
 
-      - name: Build and push database
-        uses: docker/build-push-action@v6
-        with:
-          context: ./database
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/tp-devops-database:latest
-          push: true
+        - name: Build and push database
+          uses: docker/build-push-action@v6
+          with:
+            context: ./database
+            tags: ${{ vars.DOCKERHUB_USERNAME }}/tp-devops-database:latest
+            push: true
 
-      - name: Build and push HTTPD
-        uses: docker/build-push-action@v6
-        with:
-          context: ./http-server
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
-          push: true
+        - name: Build and push HTTPD
+          uses: docker/build-push-action@v6
+          with:
+            context: ./http-server
+            tags: ${{ vars.DOCKERHUB_USERNAME }}/tp-devops-httpd:latest
+            push: true
+        - name: Build and push frontend
+          uses: docker/build-push-action@v6
+          with:
+            context: ./frontend
+            tags: ${{ vars.DOCKERHUB_USERNAME }}/tp-devops-frontend:latest
+            push: true
 
-  deploy:
-    needs: build-and-push-docker-image
-    runs-on: ubuntu-24.04
-    environment: production
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    deploy:
+      needs: build-and-push-docker-image
+      runs-on: ubuntu-24.04
+      environment: production
 
-      - name: Install Ansible
-        run: |
-          sudo apt update
-          sudo apt install -y ansible
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
 
-      - name: Install Docker collection
-        run: ansible-galaxy collection install community.docker
+        - name: Install Ansible
+          run: |
+            sudo apt update
+            sudo apt install -y ansible
 
-      - name: Create SSH private key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.id_rsa }}" > ~/.ssh/id_rsa
-          chmod 400 ~/.ssh/id_rsa
+        - name: Install Docker collection
+          run: ansible-galaxy collection install community.docker
 
-      - name: Add server to known hosts
-        run: |
-          ssh-keyscan -H 3.255.113.253 >> ~/.ssh/known_hosts
+        - name: Create SSH private key
+          run: |
+            mkdir -p ~/.ssh
+            echo "${{ secrets.id_rsa }}" > ~/.ssh/id_rsa
+            chmod 400 ~/.ssh/id_rsa
 
-      - name: Deploy with Ansible
-        run: |
-          ansible-playbook \
-            -i tp3/ansible/inventories/setup.yml \
-            tp3/ansible/playbook.yml
-  
+        - name: Add server to known hosts
+          run: |
+            ssh-keyscan -H 3.255.113.253 >> ~/.ssh/known_hosts
+
+        - name: Deploy with Ansible
+          run: |
+            ansible-playbook \
+              -i tp3/ansible/inventories/setup.yml \
+              tp3/ansible/playbook.yml
+    
