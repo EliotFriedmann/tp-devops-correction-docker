@@ -1,0 +1,21 @@
+---
+- name: Launch PostgreSQL database
+  community.docker.docker_container:
+    name: database
+    image: postgres:17.2-alpine
+    state: started
+    restart_policy: always
+
+    env:
+      POSTGRES_DB: db
+      POSTGRES_USER: usr
+      POSTGRES_PASSWORD: pwd
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    networks:
+      - name: app-network
+
+  vars:
+    ansible_python_interpreter: /opt/docker_venv/bin/python

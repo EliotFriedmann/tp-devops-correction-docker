@@ -1,0 +1,17 @@
+---
+- name: Launch HTTPD reverse proxy
+  community.docker.docker_container:
+    name: httpd
+    image: eliotfriedmann/tp-devops-httpd:latest
+    state: started
+    restart_policy: always
+    pull: true
+
+    published_ports:
+      - "80:80"
+
+    networks:
+      - name: app-network
+
+  vars:
+    ansible_python_interpreter: /opt/docker_venv/bin/python

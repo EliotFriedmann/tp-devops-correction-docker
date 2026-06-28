@@ -1,14 +1,19 @@
 package fr.takima.training.simpleapi.controller;
 
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import fr.takima.training.simpleapi.entity.Department;
 import fr.takima.training.simpleapi.service.DepartmentService;
 import fr.takima.training.simpleapi.service.StudentService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
-
+//test commentaire 
 @RestController
 @CrossOrigin
 @RequestMapping(value = "/departments")
