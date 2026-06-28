@@ -17,6 +17,11 @@ services:
     networks:
       - my-network
 
+  frontend:
+    build: "frontend"
+    networks:
+      - my-network
+
   httpd:
     build: "http-server"
     ports:

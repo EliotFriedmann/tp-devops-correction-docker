@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TP DevOps - Frontend</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">Docker + Spring Boot + PostgreSQL</p>
+        <h1>Gestion des etudiants</h1>
+        <p class="subtitle">
+          Front statique servi par Nginx et connecte a l'API via le reverse proxy Apache.
+        </p>
+      </section>
+
+      <section class="toolbar" aria-label="Actions">
+        <button id="refresh" type="button">Rafraichir</button>
+        <span id="status" class="status">Chargement...</span>
+      </section>
+
+      <section class="grid">
+        <article class="panel">
+          <h2>Etudiants</h2>
+          <div id="students" class="list"></div>
+        </article>
+
+        <article class="panel">
+          <h2>Departements</h2>
+          <div id="departments" class="list"></div>
+        </article>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
